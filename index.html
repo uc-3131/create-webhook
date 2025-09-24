@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <title>Webhook Oluşturucu</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; }
+    label { display:block; margin-top:1rem; }
+    input, button { padding: .5rem; width: 100%; }
+    button { margin-top:1rem; cursor: pointer; }
+    pre { background:#f0f0f0; padding:1rem; border-radius:6px; margin-top:1rem; }
+  </style>
+</head>
+<body>
+  <h1>Discord Webhook Oluşturucu</h1>
+
+  <form id="form">
+    <label>
+      Kanal ID:
+      <input type="text" id="channelId" required>
+    </label>
+    <label>
+      Webhook İsmi:
+      <input type="text" id="name" required>
+    </label>
+    <button type="submit">Webhook Oluştur</button>
+  </form>
+
+  <pre id="output" style="display:none;"></pre>
+
+  <script>
+    document.getElementById('form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const channelId = document.getElementById('channelId').value.trim();
+      const name = document.getElementById('name').value.trim();
+      const out = document.getElementById('output');
+
+      out.style.display = 'block';
+      out.textContent = 'Gönderiliyor...';
+
+      try {
+        const res = await fetch('/api/create-webhook', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ channelId, name })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          out.textContent = 'Hata: ' + JSON.stringify(data, null, 2);
+        } else {
+          out.textContent = 'Başarılı:\n' + JSON.stringify(data, null, 2);
+        }
+      } catch (err) {
+        out.textContent = 'İstek hatası: ' + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
