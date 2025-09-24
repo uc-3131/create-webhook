@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
   <meta charset="utf-8">
-  <title>Webhook Oluşturucu</title>
+  <title>Discord Webhook Oluşturucu</title>
   <style>
     body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; }
     label { display:block; margin-top:1rem; }
@@ -45,11 +45,16 @@
           body: JSON.stringify({ channelId, name })
         });
 
-        const data = await res.json();
-        if (!res.ok) {
-          out.textContent = 'Hata: ' + JSON.stringify(data, null, 2);
-        } else {
-          out.textContent = 'Başarılı:\n' + JSON.stringify(data, null, 2);
+        const text = await res.text();
+        try {
+          const data = JSON.parse(text);
+          if (!res.ok) {
+            out.textContent = 'Hata:\n' + JSON.stringify(data, null, 2);
+          } else {
+            out.textContent = 'Başarılı:\n' + JSON.stringify(data, null, 2);
+          }
+        } catch (parseErr) {
+          out.textContent = 'JSON parse hatası:\n' + text;
         }
       } catch (err) {
         out.textContent = 'İstek hatası: ' + err.message;
